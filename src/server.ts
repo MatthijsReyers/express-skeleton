@@ -2,6 +2,8 @@ import express from 'express';
 import session from 'express-session';
 import { Strategy } from 'passport-local';
 
+import * as auth from './auth';
+
 var app = express();
 
 /**
@@ -14,6 +16,14 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: true }
 }));
+
+/**
+ * Initialize authentication related stuff, this is mostly just a wrapper
+ * around the initialization stuff from passport.js.
+ */
+app.use(auth.initialize());
+
+
 
 app.get('/', (req, res) => {
     res.send('Hi there, skeleton app is online!');
