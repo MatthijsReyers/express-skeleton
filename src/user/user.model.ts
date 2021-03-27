@@ -6,7 +6,7 @@ export async function getUserByName(username: string): Promise<UserModel>
     // Minimal user input sanitization and formating.
     const name = username.toString().toLowerCase().replace(' ', '');
 
-    let rows = await db.query(`SELECT * FROM admin WHERE name = ? LIMIT 1`, [name]);
+    let rows = await db.query(`SELECT * FROM user WHERE name = ? LIMIT 1`, [name]);
     if (rows.length === 0)
         throw Error('No user with that name');
     return new UserModel(rows[0]);
@@ -14,10 +14,16 @@ export async function getUserByName(username: string): Promise<UserModel>
 
 export async function getUserByID(id: number): Promise<UserModel>
 {
-    let rows = await db.query(`SELECT * FROM admin WHERE id = ? LIMIT 1`, [id]);
+    let rows = await db.query(`SELECT * FROM user WHERE id = ? LIMIT 1`, [id]);
     if (rows.length === 0)
         throw Error('No user with that id');
     return new UserModel(rows[0]);
+}
+
+export async function createUser(username: string, passhash: string)
+{
+    let result = await db.query(`INSERT INTO user(username, passhash) VALUES(?,?)`, [username,passhash]);
+    return await getUserByID(result.insertId);
 }
 
 export class UserModel implements User
