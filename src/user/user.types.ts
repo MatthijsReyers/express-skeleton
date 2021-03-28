@@ -2,7 +2,7 @@
 export interface User
 {
     id: number;
-    username: string;
+    name: string;
     passwordHash: string;
     
     registered: Date;
