@@ -93,8 +93,8 @@ export function registerPost() {
             // Minimal user input sanitization and formating.
             const username = req.body['username'].toString().toLowerCase().replace(' ', '');
 
-            // Check if username is still free.
-            if (users.isUsernameTaken(username) || username < 5)
+            // Check if username is still free/valid.
+            if (users.isUsernameTaken(username) || username < 5 || username > 250)
                 return res.redirect('/?usernametaken');
 
             // Hash pass and create user.

@@ -9,7 +9,7 @@ export async function isUsernameTaken(username: string): Promise<Boolean>
         // Minimal user input sanitization and formating.
         const name = username.toString().toLowerCase().replace(' ', '');
 
-        let rows = await db.query(`SELECT * FROM user WHERE name = ? LIMIT 1`, [name]);
+        let rows = await db.query(`SELECT * FROM user WHERE username = ? LIMIT 1`, [name]);
         return (rows.length > 0);
     }
     catch (error) {

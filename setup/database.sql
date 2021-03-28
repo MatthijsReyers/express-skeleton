@@ -1,8 +1,8 @@
 
 -- Reset previous loading of this script.
 -- ----------------------------------------------------------------------------
-DROP DATABASE `skeletonapp`;
-DROP USER 'skeletonapp'@'127.0.0.1';
+DROP DATABASE `skeletonapp` IF EXISTS;
+DROP USER 'skeletonapp'@'127.0.0.1' IF EXISTS;
 
 
 -- Create a new database called 'skeletonapp'.
@@ -23,7 +23,7 @@ GRANT ALL PRIVILEGES ON `skeletonapp`.* TO 'skeletonapp'@'127.0.0.1';
 -- ----------------------------------------------------------------------------
 CREATE TABLE `user` (
     id          SERIAL PRIMARY KEY, 
-    username    TEXT NOT NULL UNIQUE,
+    username    VARCHAR(255) NOT NULL UNIQUE,
     passhash    BINARY(40) NOT NULL,
     joined_on   TIMESTAMP DEFAULT NOW() NOT NULL,
 
@@ -33,14 +33,14 @@ CREATE TABLE `user` (
 
 -- Session history table.
 -- ----------------------------------------------------------------------------
-CREATE TABLE `sessions`  (
-    user_id     BIGINT UNSIGNED NOT NULL,
-    started_on  TIMESTAMP NOT NULL,
-    ip_address  TINYTEXT NOT NULL,
-    user_agent  TINYTEXT NOT NULL,
+-- CREATE TABLE `sessions`  (
+--     user_id     BIGINT UNSIGNED NOT NULL,
+--     started_on  TIMESTAMP NOT NULL,
+--     ip_address  TINYTEXT NOT NULL,
+--     user_agent  TINYTEXT NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES user(id)
-);
+--     FOREIGN KEY (user_id) REFERENCES user(id)
+-- );
 
 
 -- Stored functions and procedures
