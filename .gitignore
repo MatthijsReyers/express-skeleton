@@ -5,5 +5,8 @@ node_modules/
 dist
 dist/
 
+logs
+logs/
+
 */package-lock.json
 package-lock.json
