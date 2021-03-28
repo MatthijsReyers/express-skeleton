@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=2
-User=website
+User=skeletonapp
 ExecStart=/bin/node /website/express-skeleton/dist/server.js
 
 [Install]
