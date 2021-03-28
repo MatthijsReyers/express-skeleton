@@ -1,0 +1,14 @@
+[Unit]
+Description=Skeleton website 
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=2
+User=website
+ExecStart=/bin/node /website/express-skeleton/dist/server.js
+
+[Install]
+WantedBy=multi-user.target
