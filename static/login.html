@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeleton app - login</title>
+</head>
+<body>
+    <form action="/login" method="POST">
+        <h2>Login form</h2>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password">
+
+        <input type="submit" value="enter">
+    </form>
+
+    <form action="/register" method="post">
+        <h2>Register form</h2>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password">
+
+        <label for="passwordagain">Repeat password</label>
+        <input type="password" id="passwordagain" name="passwordagain">
+
+        <input type="submit" value="register">
+    </form>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            font: 1em sans-serif;
+
+            background-color: #e2e2e2;
+        }
+        form {
+            width: 400px;
+            height: 400px;
+
+            box-sizing: border-box;
+            padding: 20px;
+            margin: 50px 10px;
+
+            display: flex;
+            flex-direction: column;
+
+            border: 1px solid #ececec;
+            border-radius: 5px;
+
+            background-color: #fff;
+
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.164);
+        }
+        input, button {
+            height: 30px;
+            width: 100%;
+
+            box-sizing: border-box;
+            margin-bottom: 15px;
+
+            border: 1px solid grey;
+            border-radius: 3px;
+
+            transition-duration: 110ms;
+        }
+        input[type="submit"]:hover {
+            background-color: #d9f4ff;
+            cursor: pointer;
+        }
+    </style>
+</body>
+</html>
