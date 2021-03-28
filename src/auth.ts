@@ -94,11 +94,7 @@ export function registerPost() {
             const username = req.body['username'].toString().toLowerCase().replace(' ', '');
 
             // Check if username is still free/valid.
-            console.log(`isUsernameTaken(username): ${users.isUsernameTaken(username)}`);
-            console.log(`(username.length < 5)    : ${(username.length < 5)}`);
-            console.log(`(username.length > 250)  : ${(username.length > 250)}`);
-
-            if (users.isUsernameTaken(username) || (username.length < 5) || (username.length > 250))
+            if (await users.isUsernameTaken(username) || (username.length < 5) || (username.length > 250))
                 return res.redirect('/?usernametaken');
 
             // Hash pass and create user.
