@@ -81,4 +81,4 @@ app.get('/', (req, res) => {
     res.send(`Hi ${user.name}, click here to log out: <a href="/logout">logout</a>`);
 });
 
-app.listen(process.env.SKELETON_APP_PORT || 8081);
+app.listen(process.env.SKELETON_APP_PORT || 8080);
