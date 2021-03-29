@@ -4,17 +4,12 @@
  * @module auth
  */
 
+import bcrypt from 'bcrypt';
 import passport from 'passport';
-import { AuthenticateOptions } from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Request, Response } from 'express';
 
-import * as users from './user/user.model';
-import { UserModel } from './user/user.model';
-import { UnkownUserError } from './user/user.errors';
-
-// bcrypt module does not support es6 imports.
-const bcrypt = require('bcrypt');
+import * as users from './api/users/users.model';
 
 const SALTROUNDS = 12;
 const PEPPER = 'SeCuRiTyIsHaRd';
@@ -46,14 +41,24 @@ passport.deserializeUser((id: number, done: Function) => {
 });
 
 /**
- * Initialize middleware: This is mostly just a wrapper around the 
- * initialization stuff from passport.js.
+ * Initialize middleware: This is mostly just a wrapper around the initialization
+ * stuff from passport.js.
  */
 export function initialize() {
     return [
         passport.initialize(),
         passport.session()
     ];
+}
+
+/**
+ * Logout middleware, logs out the logged in user and calls the next middleware.
+ */
+ export function logout() {
+    return (req: Request, res: Response, next:Function) => {
+        req.logout(); 
+        res.redirect('/login');
+    };
 }
 
 /**
@@ -67,13 +72,18 @@ export function loginPost() {
 }
 
 /**
- * Logout middleware, logs out the logged in user and calls the next middleware.
+ * Wrapper around the bcrypt hash function.
+ * @param {string} password string to hash
+ * @returns {string} hashed password
  */
-export function logout() {
-    return (req: Request, res: Response, next:Function) => {
-        req.logout(); 
-        res.redirect('/login');
-    };
+export function hashPassword(password: string): Promise<string>
+{
+    return bcrypt.hash(password+PEPPER, SALTROUNDS);
+}
+
+export function compareHashAndPass(password: string, hash: string): Promise<boolean>
+{
+    return bcrypt.compare(password, hash);
 }
 
 /**
@@ -89,6 +99,7 @@ export function registerPost() {
 
             // Minimal user input sanitization and formating.
             const username = req.body['username'].toString().toLowerCase().replace(' ', '');
+            const displayname = req.body['displayname'].toString().trim();
 
             // Check if username is still free/valid.
             if (await users.isUsernameTaken(username) || (username.length < 5) || (username.length > 250))
@@ -96,7 +107,7 @@ export function registerPost() {
 
             // Hash pass and create user.
             const passhash = await bcrypt.hash(req.body['password']+PEPPER, SALTROUNDS);
-            users.createUser(username, passhash);
+            users.createUser(username, displayname, passhash);
 
             // Go through to next login middleware.
             next();

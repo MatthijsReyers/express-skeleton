@@ -2,8 +2,8 @@
 export interface User
 {
     id: number;
-    name: string;
-    passwordHash: string;
+    username: string;
+    displayname: string;
     
     registered: Date;
     isAdmin: boolean;

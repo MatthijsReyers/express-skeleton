@@ -1,7 +1,7 @@
-import * as db from './../database';
-import * as logging from './../logging';
-import { User } from './user.types';
-import { UnkownUserError } from './user.errors';
+import * as db from '../../database';
+import * as logging from '../../logging';
+import { User } from './users.types';
+import { UnkownUserError } from './users.errors';
 
 export async function isUsernameTaken(username: string): Promise<Boolean>
 {
@@ -18,6 +18,12 @@ export async function isUsernameTaken(username: string): Promise<Boolean>
     }
 }
 
+export async function getAllUsers(): Promise<UserModel[]>
+{
+    let rows: any[] = await db.query(`SELECT * FROM user`);
+    return rows.map(row => new UserModel(row));
+}
+
 export async function getUserByName(username: string): Promise<UserModel>
 {
     // Minimal user input sanitization and formating.
@@ -29,7 +35,7 @@ export async function getUserByName(username: string): Promise<UserModel>
     return new UserModel(rows[0]);
 }
 
-export async function getUserByID(id: number): Promise<UserModel>
+export async function getUserByID(id: number|BigInt): Promise<UserModel>
 {
     let rows = await db.query(`SELECT * FROM user WHERE id = ? LIMIT 1`, [id]);
     if (rows.length === 0)
@@ -37,16 +43,17 @@ export async function getUserByID(id: number): Promise<UserModel>
     return new UserModel(rows[0]);
 }
 
-export async function createUser(username: string, passhash: string)
+export async function createUser(username: string, displayname: string, passhash: string)
 {
-    let result = await db.query(`INSERT INTO user(username, passhash) VALUES(?,?)`, [username,passhash]);
+    let result = await db.query(`INSERT INTO user(username, displayname, passhash) VALUES(?,?,?)`, [username,displayname,passhash]);
     return await getUserByID(result.insertId);
 }
 
 export class UserModel implements User
 {
     id: number;
-    name: string;
+    username: string;
+    displayname: string;
     passwordHash: string;
     
     registered: Date;
@@ -59,10 +66,22 @@ export class UserModel implements User
             throw new Error('Cannot create user object from empty data');
 
         this.id = rawDatabaseRow['id'];
-        this.name = rawDatabaseRow['username'];
+        this.username = rawDatabaseRow['username'];
+        this.displayname = rawDatabaseRow['displayname'];
         this.passwordHash = rawDatabaseRow['passhash'];
         this.registered = new Date(rawDatabaseRow['joined_on']);
         this.isAdmin = rawDatabaseRow['is_admin'];
+    }
+
+    toJson(): User
+    {
+        return {
+            'id': this.id,
+            'username': this.username,
+            'displayname': this.displayname,
+            'registered': this.registered,
+            'isAdmin': this.isAdmin
+        };
     }
 
     async setAdmin(status: boolean)
@@ -81,11 +100,23 @@ export class UserModel implements User
     {
         try {
             await db.query(`UPDATE user SET username = ? WHERE id = ?`, [name, this.id]);
-            this.name = name;
+            this.username = name;
             return this;
         }
         catch (error) {
             logging.modelError('users','setUsername',error);
+        }
+    }
+
+    async setDisplayname(name: string)
+    {
+        try {
+            await db.query(`UPDATE user SET displayname = ? WHERE id = ?`, [name, this.id]);
+            this.displayname = name;
+            return this;
+        }
+        catch (error) {
+            logging.modelError('users','setDisplayname',error);
         }
     }
 

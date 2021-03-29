@@ -1,12 +1,11 @@
 import path from 'path';
 import express from 'express';
-// import session from 'express-session';
-const session = require('express-session');
+import session from 'express-session';
 
 import * as auth from './auth';
 import * as database from './database';
 import * as logging from './logging';
-import { UserModel } from './user/user.model';
+import { UserModel } from './api/users/users.model';
 
 var app = express();
 
@@ -78,7 +77,7 @@ app.get('/', (req, res) => {
         return res.redirect('/login');
     
     let user: UserModel = <UserModel>req.user;
-    res.send(`Hi ${user.name}, click here to log out: <a href="/logout">logout</a>`);
+    res.send(`Hi ${user.username}, click here to log out: <a href="/logout">logout</a>`);
 });
 
 app.listen(process.env.SKELETON_APP_PORT || 8080);

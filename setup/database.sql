@@ -24,6 +24,7 @@ GRANT ALL PRIVILEGES ON `skeletonapp`.* TO 'skeletonapp'@'127.0.0.1';
 CREATE TABLE `user` (
     id          SERIAL PRIMARY KEY, 
     username    VARCHAR(255) NOT NULL UNIQUE,
+    displayname TEXT NOT NULL,
     passhash    VARCHAR(60) NOT NULL,
     joined_on   TIMESTAMP DEFAULT NOW() NOT NULL,
 

@@ -68,3 +68,17 @@ export function modelError(modelname: string, funcname: string, error: any)
     console.error(message);
     appendToLogFile(message);
 }
+
+export function apiWarn(apiname: string, funcname: string, warning: any)
+{
+    const message = `[!] API error in ${apiname}:${funcname}() - ${warning}`;
+    console.error(message);
+    appendToLogFile(message);
+}
+
+export function apiError(apiname: string, funcname: string, error: any)
+{
+    const message = `[!] API error in ${apiname}: ${funcname} - ${error}`;
+    console.error(message);
+    appendToLogFile(message);
+}
