@@ -1,8 +1,8 @@
 
 -- Reset previous loading of this script.
 -- ----------------------------------------------------------------------------
-DROP DATABASE `skeletonapp` IF EXISTS;
-DROP USER 'skeletonapp'@'127.0.0.1' IF EXISTS;
+DROP DATABASE IF EXISTS `skeletonapp`;
+DROP USER IF EXISTS 'skeletonapp'@'127.0.0.1';
 
 
 -- Create a new database called 'skeletonapp'.

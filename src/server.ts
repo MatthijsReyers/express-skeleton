@@ -1,6 +1,7 @@
 import path from 'path';
 import express from 'express';
-import session from 'express-session';
+// import session from 'express-session';
+const session = require('express-session');
 
 import * as auth from './auth';
 import * as database from './database';
@@ -37,40 +38,47 @@ database.connect({
 });
 
 /**
+ * Setup request body parsing middleware.
+ */
+app.use(express.json());
+app.use(express.urlencoded({ extended: false })); 
+
+/**
  * Session middleware, used by passport.js for keeping track of sessions.
  * TODO: provide custom session store that does not very slowly leak memmory.
  */
 app.use(session({
     secret: 'PowerPointIsTuringComplete',
+    saveUninitialized: false,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
+    cookie: {
+        secure: false 
+    }
 }));
-
-/**
- * Setup request body parsing middleware.
- */
-app.use(express.urlencoded({ extended: true })); 
-app.use(express.json()); 
 
 /**
  * Initialize authentication related paths and middleware, note that auth.initialize 
  * is mostly just a wrapper around the initialization stuff from passport.js
  */
 app.use(auth.initialize());
-app.use('/logout', auth.logoutPost());
+app.get('/logout', auth.logout());
 app.post('/login', auth.loginPost());
 app.post('/register', auth.registerPost());
+app.get('/login', (req,res) => {
+    if (req.isAuthenticated()) res.redirect('/');
+    else res.sendFile(path.join(__dirname,'./../static/login.html'));
+});
 
 /**
  * Root url, sends a different page if the user is logged in, replace this with
  * your own stuff.
  */
 app.get('/', (req, res) => {
+    if (!req.isAuthenticated()) 
+        return res.redirect('/login');
+    
     let user: UserModel = <UserModel>req.user;
-    if (req.isAuthenticated()) 
-        res.send(`Hi ${user.name}, click here to log out: <a href="/logout">logout</a>`);
-    else res.sendFile(path.join(__dirname,'./../static/login.html'));
+    res.send(`Hi ${user.name}, click here to log out: <a href="/logout">logout</a>`);
 });
 
-app.listen(process.env.SKELETON_APP_PORT || 8080);
+app.listen(process.env.SKELETON_APP_PORT || 8081);

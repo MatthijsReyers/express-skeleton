@@ -26,26 +26,23 @@ passport.use(new LocalStrategy(async (name, pass, done) => {
     try {
         let user = await users.getUserByName(name);
         let result = await bcrypt.compare(pass+PEPPER, user.passwordHash);
+        console.log('Verifying passwords:', (result === true), user);
         if (result === true) done(null, user);
-        else done(new Error("Wrong password"));
+        else done(null, false, {message:"Wrong password"});
     }
     catch (error) {
         return done(error);
     }
 }));
 
-passport.serializeUser(async (user: any, done: Function) => {
+passport.serializeUser((user: any, done: Function) => {
     done(null, user.id);
 });
   
-passport.deserializeUser(async (id: number, done: Function) => {
-    try {
-        let user = await users.getUserByID(id);
-        done(null, user);
-    }
-    catch (error) {
-        return done(error);
-    }
+passport.deserializeUser((id: number, done: Function) => {
+    users.getUserByID(id)
+    .then(user => done(null, user))
+    .catch(error => done(error));
 });
 
 /**
@@ -65,17 +62,17 @@ export function initialize() {
 export function loginPost() {
     return passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/?loginfail'
+        failureRedirect: '/login?loginfail'
     });
 }
 
 /**
  * Logout middleware, logs out the logged in user and calls the next middleware.
  */
-export function logoutPost() {
+export function logout() {
     return (req: Request, res: Response, next:Function) => {
         req.logout(); 
-        next();
+        res.redirect('/login');
     };
 }
 
@@ -88,14 +85,14 @@ export function registerPost() {
 
             // Check if both passwords match.
             if (req.body['password'] !== req.body['passwordagain'])
-                return res.redirect('/?passwordsmissmatch');
+                return res.redirect('/login?passwordsmissmatch');
 
             // Minimal user input sanitization and formating.
             const username = req.body['username'].toString().toLowerCase().replace(' ', '');
 
             // Check if username is still free/valid.
             if (await users.isUsernameTaken(username) || (username.length < 5) || (username.length > 250))
-                return res.redirect('/?usernametaken');
+                return res.redirect('/login?usernametaken');
 
             // Hash pass and create user.
             const passhash = await bcrypt.hash(req.body['password']+PEPPER, SALTROUNDS);
@@ -106,7 +103,7 @@ export function registerPost() {
         },
         passport.authenticate('local', {
             successRedirect: '/',
-            failureRedirect: '/?loginfail'
+            failureRedirect: '/login?loginfail'
         })
     ];
 }
