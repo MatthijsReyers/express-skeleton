@@ -125,15 +125,15 @@ export function Unsigned()
 
 export function Length(length:number)
 {
-        // Check function, actually enforces the constraints of this decorator.
-        function checkLength(newValue: string|any[], propertyKey: string)
-        {
-            // This decorator does not filter out null values.
-            if (newValue === null) return;
-    
-            if (newValue.length > length)
-                throw new Http422Error(`Property '${propertyKey}' cannot be longer than '${length}'.`);
-        }
-    
-        return decoratorFactory(checkLength)
+    // Check function, actually enforces the constraints of this decorator.
+    function checkLength(newValue: string|any[], propertyKey: string)
+    {
+        // This decorator does not filter out null values.
+        if (newValue === null) return;
+
+        if (newValue.length > length)
+            throw new Http422Error(`Property '${propertyKey}' cannot be longer than '${length}'.`);
+    }
+
+    return decoratorFactory(checkLength);
 }
